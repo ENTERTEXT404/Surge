@@ -1,0 +1,92 @@
+name: Sync REJECT.list
+
+'on':
+  schedule:
+    - cron: '30 6 * * *'
+      timezone: Asia/Shanghai
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/sync-reject.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-reject-list
+
+jobs:
+  sync:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      UPSTREAM_URL: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/refs/heads/main/Filters/AWAvenue-Ads-Rule-Surge.list
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: main
+
+      - name: Download and validate upstream rules
+        shell: bash
+        run: |
+          upstream=$(mktemp)
+          trap 'rm -f "$upstream"' EXIT
+          curl --fail --silent --show-error --location --retry 3 \
+            --proto '=https' --proto-redir '=https' --connect-timeout 10 \
+            --max-time 45 --output "$upstream" "$UPSTREAM_URL"
+
+          python3 - "$upstream" <<'PY'
+          from datetime import datetime
+          from pathlib import Path
+          import re
+          import sys
+
+          label = r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
+          domain = re.compile(rf"\.?{label}(?:\.{label})*", re.IGNORECASE | re.ASCII)
+          rules = []
+          metadata = {}
+          for raw in Path(sys.argv[1]).read_text(encoding="utf-8-sig").splitlines():
+              line = raw.strip()
+              if not line or line.startswith("//"):
+                  continue
+              if line.startswith("#"):
+                  key, separator, value = line[1:].partition(":")
+                  if separator:
+                      metadata[key.strip()] = value.strip()
+                  continue
+              if len(line.removeprefix(".")) > 253 or not domain.fullmatch(line):
+                  raise SystemExit(f"Invalid DOMAIN-SET entry: {line!r}")
+              rules.append(line)
+
+          if not rules or len(rules) != int(metadata.get("Total lines", "0")):
+              raise SystemExit("Upstream rule count is empty or differs from its declared total")
+
+          updated = datetime.strptime(metadata["Update time"], "%Y-%m-%d %H:%M:%S UTC+8")
+          header = [
+              "# NAME: REJECT",
+              "# AUTHOR: AWAvenue Ads Rule",
+              "# REPO: https://github.com/ENTERTEXT404/Surge",
+              f"# UPDATED: {updated:%Y.%m.%d %H:%M:%S} UTC+8",
+              f"# TOTAL: {len(rules)}",
+              "# SOURCE: https://github.com/TG-Twilight/AWAvenue-Ads-Rule",
+              "# LICENSE: GPL-3.0 (LICENSES/AWAvenue-Ads-Rule-GPL-3.0.txt)",
+              "# MODIFIED: 此镜像重排文件头，域名规则沿用上游。",
+              "# ======= 上游同步规则 ========",
+          ]
+          Path("REJECT.list").write_text("\n".join(header + rules) + "\n", encoding="utf-8")
+          print(f"Validated {len(rules)} upstream DOMAIN-SET rules.")
+          PY
+
+      - name: Commit changes to REJECT.list
+        shell: bash
+        run: |
+          git add -- REJECT.list
+          if git diff --cached --quiet -- REJECT.list; then
+            echo 'REJECT.list is already up to date.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Sync REJECT.list from AWAvenue Ads Rule'
+          git push origin HEAD:refs/heads/main
