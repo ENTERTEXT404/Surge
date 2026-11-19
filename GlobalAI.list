@@ -1,20 +1,3 @@
-# Reviewed 2026-11-19: removed 2 obsolete/parked service domains and tightened 3 suffix entries to exact hosts.
-# Original: GlobalAI_Merged_Sukka_DOMAIN-SET.list
-# UPDATED: 2026-11-19 - curated Sukka AI additions
-# Sukka source: https://ruleset.skk.moe/List/non_ip/ai.conf (source updated 2026-11-15)
-# Sukka rules are licensed AGPL-3.0: https://github.com/SukkaW/Surge
-# Entries newly approved from Sukka: 13; exact-to-suffix upgrades: 3
-# Ambiguous/general endpoints are excluded from default and may appear in optional file.
-# Surge DOMAIN-SET format
-# Leading dot = DOMAIN-SUFFIX; no leading dot = exact DOMAIN
-# Use DOMAIN-SET,filename,AI in [Rule]
-# GlobalAI CLEAN / conservative cross-provider AI policy
-# Purpose: Surge AI routing, NOT ad blocking, NOT MITM.
-# Original source inspected: https://magicrule.pages.dev/data/_shared/artifacts/GlobalAI_rules_7591fffa97b1e679.list
-# Conservative manual curation; some domain entries may be supplements.
-# Policy is configured on the DOMAIN-SET line in [Rule].
-# No IP/ASN, DOMAIN-KEYWORD, PROCESS-NAME or URL-REGEX.
-
 # OpenAI / ChatGPT / Sora
 .chatgpt.com
 .openai.com
