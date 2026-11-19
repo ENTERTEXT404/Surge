@@ -11,7 +11,7 @@ name: Sync REJECT.list
     branches: [main]
     paths:
       - .github/workflows/Auto-Rules.yml
-      - .github/workflows/Scripts/sync_reject.py
+      - .github/workflows/Scripts/sync_rules.py
       - Rules/Manual/REJECT.txt
       - Rules/Manual/REJECT.exclude.txt
 
@@ -45,7 +45,7 @@ jobs:
             --proto '=https' --proto-redir '=https' --connect-timeout 10 \
             --max-time 45 --output "$upstream" "$UPSTREAM_URL"
 
-          python3 .github/workflows/Scripts/sync_reject.py "$upstream"
+          python3 .github/workflows/Scripts/sync_rules.py "$upstream"
 
       - name: Commit changes to REJECT.list
         shell: bash

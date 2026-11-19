@@ -102,5 +102,5 @@ def main(upstream_path: Path) -> None:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        raise SystemExit("用法：python3 .github/workflows/Scripts/sync_reject.py <上游规则文件>")
+        raise SystemExit("用法：python3 .github/workflows/Scripts/sync_rules.py <上游规则文件>")
     main(Path(sys.argv[1]))
