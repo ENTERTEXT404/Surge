@@ -1,12 +1,8 @@
 # NAME: REJECT
 # AUTHOR: AWAvenue Ads Rule
 # REPO: https://github.com/ENTERTEXT404/Surge
-# UPDATED: 2026.11.16 17:36:05 UTC+8
+# UPDATED: 2026.11.16 17:36:05
 # TOTAL: 981
-# SOURCE: https://github.com/TG-Twilight/AWAvenue-Ads-Rule
-# LICENSE: GPL-3.0 (LICENSES/AWAvenue-Ads-Rule-GPL-3.0.txt)
-# MODIFIED: 此镜像重排文件头，域名规则沿用上游。
-# ======= 上游同步规则 ========
 .1500020991.vodplayer.wxamedia.com
 .1500022744.vodplayer.wxamedia.com
 .1500026601.vodplayer.wxamedia.com
