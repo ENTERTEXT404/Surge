@@ -1,8 +1,9 @@
 # NAME: REJECT
-# AUTHOR: AWAvenue Ads Rule
+# AUTHOR: ENTERTEXT404/Surge
 # REPO: https://github.com/ENTERTEXT404/Surge
-# UPDATED: 2026.11.16 17:36:05
-# TOTAL: 981
+# UPDATED: 2026.11.19 10:00:02
+# TOTAL: 978
+# ======= 上游同步规则 ========
 .1500020991.vodplayer.wxamedia.com
 .1500022744.vodplayer.wxamedia.com
 .1500026601.vodplayer.wxamedia.com
@@ -974,13 +975,10 @@
 .zxid-m.mobileservice.cn
 .1rtb.com
 .a.market.xiaomi.com
-.ad.gameley.com
 .adintl.cn
-.adsmoloco.com
 .adx.adwangmai.com
 .data.hicloud.com
 .ubixioe.com
-.unityads.unity3d.com
 .vlion.cn
 .yfanads.com
 .zhangyuyidong.cn
