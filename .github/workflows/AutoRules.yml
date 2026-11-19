@@ -1,11 +1,9 @@
 name: Sync Surge rules
 
 'on':
-  # 北京时间 06:30 同步 REJECT，07:15 同步 DIRECT，也可以手动运行。
+  # 北京时间每天 07:00 同步 DIRECT 和 REJECT，也可以手动运行。
   schedule:
-    - cron: '30 6 * * *'
-      timezone: Asia/Shanghai
-    - cron: '15 7 * * *'
+    - cron: '0 7 * * *'
       timezone: Asia/Shanghai
   workflow_dispatch:
   # 工作流、同步脚本或手动规则改动时，立即跑一次同步。
@@ -35,11 +33,12 @@ jobs:
       UPSTREAM_URL: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/refs/heads/main/Filters/AWAvenue-Ads-Rule-Surge.list
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        id: checkout
         with:
           ref: main
 
       - name: Sync REJECT.list
-        if: github.event_name != 'schedule' || github.event.schedule == '30 6 * * *'
+        id: reject
         shell: bash
         run: |
           # 下载到临时文件，下载失败时保留当前名单。
@@ -52,7 +51,8 @@ jobs:
           python3 .github/workflows/Scripts/SyncRules.py "$upstream"
 
       - name: Sync DIRECT.list
-        if: github.event_name != 'schedule' || github.event.schedule == '15 7 * * *'
+        id: direct
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
         shell: bash
         env:
           # 更新基准前先人工审核。这个固定快照限制自动同步的直连范围。
@@ -78,10 +78,19 @@ jobs:
           python3 .github/workflows/Scripts/SyncDirect.py "$workdir" "$workdir/baseline.list"
 
       - name: Commit changes to rule lists
+        if: ${{ !cancelled() && (steps.reject.outcome == 'success' || steps.direct.outcome == 'success') }}
         shell: bash
+        env:
+          REJECT_OUTCOME: ${{ steps.reject.outcome }}
+          DIRECT_OUTCOME: ${{ steps.direct.outcome }}
         run: |
-          # 只提交生成的名单，提交标题使用北京时间。
-          git add -- REJECT.list DIRECT.list
+          # 分别暂存成功生成的名单，单一上游失败时继续发布另一份。
+          if [[ "$REJECT_OUTCOME" == success ]]; then
+            git add -- REJECT.list
+          fi
+          if [[ "$DIRECT_OUTCOME" == success ]]; then
+            git add -- DIRECT.list
+          fi
           if git diff --cached --quiet -- REJECT.list DIRECT.list; then
             echo 'Rule lists are already up to date.'
             exit 0

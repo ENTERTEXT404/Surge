@@ -42,6 +42,42 @@ def unique_rules(rules, seen):
     return result
 
 
+def write_rule_list(
+    output: Path, body: list[str], *, source: str, license_file: str, modified: str, total: int
+) -> bool:
+    repository = os.environ["GITHUB_REPOSITORY"]
+    server = os.environ["GITHUB_SERVER_URL"]
+    updated_prefix = "# UPDATED: "
+    header = [
+        f"# NAME: {output.stem}",
+        f"# SOURCE: {source}",
+        f"# SOURCE_URL: https://github.com/{source}",
+        "# LICENSE: GPL-3.0",
+        f"# LICENSE_FILE: {license_file}",
+        f"# MAINTAINER: {os.environ['GITHUB_REPOSITORY_OWNER']}",
+        f"# REPO: {server}/{repository}",
+        f"# MODIFIED: {modified}",
+        updated_prefix,
+        f"# TOTAL: {total}",
+    ]
+    updated_index = header.index(updated_prefix)
+    previous = output.read_text(encoding="utf-8").splitlines() if output.exists() else []
+
+    # 内容有变化时才更新时间，避免每天产生空提交。
+    if (
+        len(previous) >= len(header)
+        and previous[:updated_index] == header[:updated_index]
+        and previous[updated_index].startswith(updated_prefix)
+        and previous[updated_index + 1:] == header[updated_index + 1:] + body
+    ):
+        print(f"{output.name} is unchanged ({total} rules).")
+        return False
+
+    header[updated_index] += f"{datetime.now(ZoneInfo('Asia/Shanghai')):%Y.%m.%d %H:%M:%S}"
+    output.write_text("\n".join(header + body) + "\n", encoding="utf-8")
+    return True
+
+
 def main(upstream_path: Path) -> None:
     # 同时校验域名格式和上游声明的条数，防止截断内容被写入。
     upstream, metadata = read_rules(upstream_path)
@@ -68,43 +104,20 @@ def main(upstream_path: Path) -> None:
     if not total:
         raise SystemExit("No rules remain after applying exclusions")
 
-    repository = os.environ["GITHUB_REPOSITORY"]
-    server = os.environ["GITHUB_SERVER_URL"]
-    updated_prefix = "# UPDATED: "
-    header = [
-        "# NAME: REJECT",
-        "# SOURCE: TG-Twilight/AWAvenue-Ads-Rule",
-        "# SOURCE_URL: https://github.com/TG-Twilight/AWAvenue-Ads-Rule",
-        "# LICENSE: GPL-3.0",
-        "# LICENSE_FILE: LICENSES/AWAvenue.md",
-        f"# MAINTAINER: {os.environ['GITHUB_REPOSITORY_OWNER']}",
-        f"# REPO: {server}/{repository}",
-        "# MODIFIED: 2026-11-19",
-        updated_prefix,
-        f"# TOTAL: {total}",
-    ]
-    updated_index = header.index(updated_prefix)
     body = [""]
     if manual:
         body.extend(["# ======= 手动维护规则 ========", *manual])
     body.extend(["# ======= 上游同步规则 ========", *synchronized])
 
-    output = Path("REJECT.list")
-    previous = output.read_text(encoding="utf-8").splitlines() if output.exists() else []
-
-    # 内容有变化时才更新时间，避免每天产生空提交。
-    if (
-        len(previous) >= len(header)
-        and previous[:updated_index] == header[:updated_index]
-        and previous[updated_index].startswith(updated_prefix)
-        and previous[updated_index + 1:] == header[updated_index + 1:] + body
+    if write_rule_list(
+        Path("REJECT.list"),
+        body,
+        source="TG-Twilight/AWAvenue-Ads-Rule",
+        license_file="LICENSES/AWAvenue.md",
+        modified="2026-11-19",
+        total=total,
     ):
-        print(f"REJECT.list is unchanged ({total} rules).")
-        return
-
-    header[updated_index] += f"{datetime.now(ZoneInfo('Asia/Shanghai')):%Y.%m.%d %H:%M:%S}"
-    output.write_text("\n".join(header + body) + "\n", encoding="utf-8")
-    print(f"Validated {len(synchronized)} upstream rules and {len(manual)} manual rules.")
+        print(f"Validated {len(synchronized)} upstream rules and {len(manual)} manual rules.")
 
 
 if __name__ == "__main__":

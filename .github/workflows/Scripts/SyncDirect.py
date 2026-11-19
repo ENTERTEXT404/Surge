@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 import sys
 
-from SyncRules import domain, read_rules
+from SyncRules import domain, read_rules, write_rule_list
 
 SOURCE_FILES = ("direct.txt", "private.txt", "apple.txt", "icloud.txt")
 
@@ -90,21 +90,15 @@ def main(upstream_dir, baseline_path):
     if any(not covered(rule, baseline) or not covered(rule, upstream) for rule in result):
         raise SystemExit("生成结果超出了已审核基准或上游范围")
 
-    lines = [
-        "# NAME: DIRECT",
-        "# SOURCE: Loyalsoldier/surge-rules",
-        "# SOURCE_URL: https://github.com/Loyalsoldier/surge-rules",
-        "# LICENSE: GPL-3.0",
-        "# LICENSE_FILE: LICENSES/Loyalsoldier.md",
-        f"# TOTAL: {len(result)}",
-        "",
-        "# ======= 上游同步规则 ========",
-        *sorted(result, key=sort_key),
-    ]
-    output = Path("DIRECT.list")
-    contents = "\n".join(lines) + "\n"
-    if not output.exists() or output.read_text(encoding="utf-8") != contents:
-        output.write_text(contents, encoding="utf-8")
+    body = ["", "# ======= 上游同步规则 ========", *sorted(result, key=sort_key)]
+    write_rule_list(
+        Path("DIRECT.list"),
+        body,
+        source="Loyalsoldier/surge-rules",
+        license_file="LICENSES/Loyalsoldier.md",
+        modified="2026-11-19",
+        total=len(result),
+    )
     report_candidates(upstream - from_upstream, len(result), raw_total)
 
 
