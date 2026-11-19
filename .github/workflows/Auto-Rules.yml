@@ -117,16 +117,8 @@ jobs:
               body.extend(["# ======= 手动维护规则 ========", *manual])
           body.extend(["# ======= 上游同步规则 ========", *synchronized])
 
-          output = Path("REJECT.list")
-          previous = output.read_text(encoding="utf-8").splitlines()
-          # 来源和许可保存在名单末尾，按注释原样保留。
-          notice_marker = "# ======= AWAvenue 来源与许可 ========"
-          if notice_marker not in previous:
-              raise SystemExit("REJECT.list 缺少来源与许可区段")
-          notice = previous[previous.index(notice_marker):]
-          if len(notice) == 1 or any(not line.startswith("#") for line in notice):
-              raise SystemExit("REJECT.list 的来源与许可区段必须全部为注释")
-          body.extend(["", *notice])
+                    output = Path("REJECT.list")
+          previous = output.read_text(encoding="utf-8").splitlines() if output.exists() else []
 
           # 内容有变化时才更新时间，避免每天产生空提交。
           if (
