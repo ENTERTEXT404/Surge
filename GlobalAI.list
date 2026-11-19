@@ -1,3 +1,15 @@
+# NAME: GlobalAI
+# SOURCE: magical404/MagicRule
+# SOURCE_URL: https://github.com/magical404/MagicRule
+# LICENSE: See LICENSE_FILE
+# LICENSE_FILE: LICENSES/MagicRule.md
+# MAINTAINER: ENTERTEXT404
+# REPO: https://github.com/ENTERTEXT404/Surge
+# MODIFIED: 2026-11-19
+# UPDATED: 2026.11.19 16:48:09
+# TOTAL: 119
+
+# ======= 手动维护规则 ========
 # OpenAI / ChatGPT / Sora
 .chat.com
 .chatgpt.com
@@ -131,3 +143,10 @@ gateway.ai.cloudflare.com
 .suno.com
 .synthesia.io
 .udio.com
+
+# ======= 上游同步规则 ========
+arena.ai
+jules.google.com
+.leonardo.ai
+.recraft.ai
+stitch.withgoogle.com

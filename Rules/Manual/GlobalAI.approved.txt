@@ -1,0 +1,11 @@
+# 手工核验的 AI 端点或专用后缀。同步时还会校验上游覆盖和 DIRECT 冲突。
+# Arena 官方模型对比平台 https://arena.ai/
+arena.ai
+# Google Jules 编程代理 https://jules.google.com/
+jules.google.com
+# Leonardo AI 图像与视频生成 https://leonardo.ai/
+.leonardo.ai
+# Recraft AI 设计工具 https://www.recraft.ai/
+.recraft.ai
+# Google Stitch 设计工具入口 https://stitch.withgoogle.com/
+stitch.withgoogle.com

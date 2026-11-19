@@ -1,7 +1,7 @@
 name: Sync Surge rules
 
 'on':
-  # 北京时间每天 07:00 同步 DIRECT 和 REJECT，也可以手动运行。
+  # 北京时间每天 07:00 同步 DIRECT、REJECT 和 GlobalAI，也可以手动运行。
   schedule:
     - cron: '0 7 * * *'
       timezone: Asia/Shanghai
@@ -13,6 +13,9 @@ name: Sync Surge rules
       - .github/workflows/AutoRules.yml
       - .github/workflows/Scripts/SyncRules.py
       - .github/workflows/Scripts/SyncDirect.py
+      - .github/workflows/Scripts/SyncGlobalAI.py
+      - Rules/Manual/GlobalAI.txt
+      - Rules/Manual/GlobalAI.approved.txt
       - Rules/Manual/REJECT.txt
       - Rules/Manual/REJECT.exclude.txt
 
@@ -50,18 +53,24 @@ jobs:
 
           python3 .github/workflows/Scripts/SyncRules.py "$upstream"
 
-      - name: Sync DIRECT.list
-        id: direct
+      - name: Load approved DIRECT scope
+        id: direct_scope
         if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
         shell: bash
         env:
-          # 更新基准前先人工审核。这个固定快照限制自动同步的直连范围。
+          # 固定快照限制 DIRECT 自动纳入的范围，也用于防止 GlobalAI 覆盖已审核直连。
           DIRECT_BASELINE: 0ca36e36e56af9bbee9f6f187afb0a76f73d721b
+        run: |
+          git fetch --no-tags --depth 1 origin "$DIRECT_BASELINE"
+          git show "${DIRECT_BASELINE}:DIRECT.list" > "$RUNNER_TEMP/direct-baseline.list"
+
+      - name: Sync DIRECT.list
+        id: direct
+        if: ${{ !cancelled() && steps.direct_scope.outcome == 'success' }}
+        shell: bash
         run: |
           workdir=$(mktemp -d)
           trap 'rm -rf "$workdir"' EXIT
-          git fetch --no-tags --depth 1 origin "$DIRECT_BASELINE"
-          git show "${DIRECT_BASELINE}:DIRECT.list" > "$workdir/baseline.list"
 
           # 固定到同一个 release 提交，避免四份文件来自不同版本。
           ref=$(git ls-remote --exit-code https://github.com/Loyalsoldier/surge-rules.git refs/heads/release)
@@ -75,14 +84,22 @@ jobs:
               --max-time 45 --output "$workdir/$list" "$upstream_url/$list"
           done
 
-          python3 .github/workflows/Scripts/SyncDirect.py "$workdir" "$workdir/baseline.list"
+          python3 .github/workflows/Scripts/SyncDirect.py "$workdir" "$RUNNER_TEMP/direct-baseline.list"
+
+      - name: Sync GlobalAI.list
+        id: globalai
+        if: ${{ !cancelled() && steps.direct_scope.outcome == 'success' }}
+        shell: bash
+        run: |
+          python3 .github/workflows/Scripts/SyncGlobalAI.py "$RUNNER_TEMP/direct-baseline.list"
 
       - name: Commit changes to rule lists
-        if: ${{ !cancelled() && (steps.reject.outcome == 'success' || steps.direct.outcome == 'success') }}
+        if: ${{ !cancelled() && (steps.reject.outcome == 'success' || steps.direct.outcome == 'success' || steps.globalai.outcome == 'success') }}
         shell: bash
         env:
           REJECT_OUTCOME: ${{ steps.reject.outcome }}
           DIRECT_OUTCOME: ${{ steps.direct.outcome }}
+          GLOBALAI_OUTCOME: ${{ steps.globalai.outcome }}
         run: |
           # 分别暂存成功生成的名单，单一上游失败时继续发布另一份。
           if [[ "$REJECT_OUTCOME" == success ]]; then
@@ -91,7 +108,10 @@ jobs:
           if [[ "$DIRECT_OUTCOME" == success ]]; then
             git add -- DIRECT.list
           fi
-          if git diff --cached --quiet -- REJECT.list DIRECT.list; then
+          if [[ "$GLOBALAI_OUTCOME" == success ]]; then
+            git add -- GlobalAI.list
+          fi
+          if git diff --cached --quiet -- REJECT.list DIRECT.list GlobalAI.list; then
             echo 'Rule lists are already up to date.'
             exit 0
           fi

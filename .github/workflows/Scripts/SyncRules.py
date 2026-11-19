@@ -43,7 +43,14 @@ def unique_rules(rules, seen):
 
 
 def write_rule_list(
-    output: Path, body: list[str], *, source: str, license_file: str, modified: str, total: int
+    output: Path,
+    body: list[str],
+    *,
+    source: str,
+    license_file: str,
+    modified: str,
+    total: int,
+    license_name: str = "GPL-3.0",
 ) -> bool:
     repository = os.environ["GITHUB_REPOSITORY"]
     server = os.environ["GITHUB_SERVER_URL"]
@@ -52,7 +59,7 @@ def write_rule_list(
         f"# NAME: {output.stem}",
         f"# SOURCE: {source}",
         f"# SOURCE_URL: https://github.com/{source}",
-        "# LICENSE: GPL-3.0",
+        f"# LICENSE: {license_name}",
         f"# LICENSE_FILE: {license_file}",
         f"# MAINTAINER: {os.environ['GITHUB_REPOSITORY_OWNER']}",
         f"# REPO: {server}/{repository}",
