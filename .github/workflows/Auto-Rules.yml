@@ -6,11 +6,12 @@ name: Sync REJECT.list
     - cron: '30 6 * * *'
       timezone: Asia/Shanghai
   workflow_dispatch:
-  # 工作流或手动规则文件改动时，立即跑一次同步。
+  # 工作流、同步脚本或手动规则改动时，立即跑一次同步。
   push:
     branches: [main]
     paths:
       - .github/workflows/Auto-Rules.yml
+      - scripts/sync_reject.py
       - Rules/Manual/REJECT.txt
       - Rules/Manual/REJECT.exclude.txt
 
@@ -44,96 +45,7 @@ jobs:
             --proto '=https' --proto-redir '=https' --connect-timeout 10 \
             --max-time 45 --output "$upstream" "$UPSTREAM_URL"
 
-          python3 - "$upstream" <<'PY'
-          from datetime import datetime
-          import os
-          from pathlib import Path
-          import re
-          import sys
-          from zoneinfo import ZoneInfo
-
-          label = r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
-          domain = re.compile(rf"\.?{label}(?:\.{label})*", re.IGNORECASE | re.ASCII)
-
-
-          def read_rules(path):
-              rules = []
-              metadata = {}
-              for number, raw in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), 1):
-                  line = raw.strip()
-                  if not line or line.startswith("//"):
-                      continue
-                  if line.startswith("#"):
-                      key, separator, value = line[1:].partition(":")
-                      if separator:
-                          metadata[key.strip()] = value.strip()
-                      continue
-                  if len(line.removeprefix(".")) > 253 or not domain.fullmatch(line):
-                      raise SystemExit(f"{path}:{number}: invalid DOMAIN-SET entry {line!r}")
-                  rules.append(line)
-              return rules, metadata
-
-
-          def optional_rules(filename):
-              path = Path("Rules/Manual") / filename
-              return read_rules(path)[0] if path.exists() else []
-
-
-          def unique_rules(rules, seen):
-              result = []
-              for rule in rules:
-                  key = rule.casefold()
-                  if key not in seen:
-                      seen.add(key)
-                      result.append(rule)
-              return result
-
-
-          # 同时校验域名格式和上游声明的条数，防止截断内容被写入。
-          upstream, metadata = read_rules(Path(sys.argv[1]))
-          if not upstream or str(len(upstream)) != metadata.get("Total lines"):
-              raise SystemExit("Upstream rule count is empty or differs from its declared total")
-
-          # 手动规则优先。排除表只作用于上游，并按整条规则比较。
-          seen = set()
-          manual = unique_rules(optional_rules("REJECT.txt"), seen)
-          exclusions = {rule.casefold() for rule in optional_rules("REJECT.exclude.txt")}
-          synchronized = unique_rules(upstream, seen | exclusions)
-          total = len(manual) + len(synchronized)
-          if not total:
-              raise SystemExit("No rules remain after applying exclusions")
-
-          repository = os.environ["GITHUB_REPOSITORY"]
-          server = os.environ["GITHUB_SERVER_URL"]
-          header = [
-              "# NAME: REJECT",
-              f"# AUTHOR: {os.environ['GITHUB_REPOSITORY_OWNER']}",
-              f"# REPO: {server}/{repository}",
-              "# UPDATED: ",
-              f"# TOTAL: {total}",
-          ]
-          body = [""]
-          if manual:
-              body.extend(["# ======= 手动维护规则 ========", *manual])
-          body.extend(["# ======= 上游同步规则 ========", *synchronized])
-
-          output = Path("REJECT.list")
-          previous = output.read_text(encoding="utf-8").splitlines() if output.exists() else []
-
-          # 内容有变化时才更新时间，避免每天产生空提交。
-          if (
-              len(previous) >= len(header)
-              and previous[3].startswith(header[3])
-              and previous[:3] == header[:3]
-              and previous[4:] == header[4:] + body
-          ):
-              print(f"REJECT.list is unchanged ({total} rules).")
-              sys.exit(0)
-
-          header[3] += f"{datetime.now(ZoneInfo('Asia/Shanghai')):%Y.%m.%d %H:%M:%S}"
-          output.write_text("\n".join(header + body) + "\n", encoding="utf-8")
-          print(f"Validated {len(synchronized)} upstream rules and {len(manual)} manual rules.")
-          PY
+          python3 scripts/sync_reject.py "$upstream"
 
       - name: Commit changes to REJECT.list
         shell: bash
