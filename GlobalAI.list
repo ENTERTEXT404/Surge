@@ -1,122 +1,150 @@
-# OpenAI / ChatGPT / Sora
-DOMAIN-SUFFIX,chatgpt.com
-DOMAIN-SUFFIX,openai.com
-DOMAIN-SUFFIX,oaistatic.com
-DOMAIN-SUFFIX,oaiusercontent.com
-DOMAIN-SUFFIX,oaistatsig.com
-DOMAIN-SUFFIX,sora.com
-DOMAIN-SUFFIX,chatgpt.livekit.cloud
-DOMAIN-SUFFIX,openaiapi-site.azureedge.net
-DOMAIN,openai-api.arkoselabs.com
-DOMAIN,production-openaicom-storage.azureedge.net
-DOMAIN,openaiassets.blob.core.windows.net
-DOMAIN,openaicomproductionae4b.blob.core.windows.net
+# Reviewed 2026-11-19: removed 2 obsolete/parked service domains and tightened 3 suffix entries to exact hosts.
+# Original: GlobalAI_Merged_Sukka_DOMAIN-SET.list
+# UPDATED: 2026-11-19 - curated Sukka AI additions
+# Sukka source: https://ruleset.skk.moe/List/non_ip/ai.conf (source updated 2026-11-15)
+# Sukka rules are licensed AGPL-3.0: https://github.com/SukkaW/Surge
+# Entries newly approved from Sukka: 13; exact-to-suffix upgrades: 3
+# Ambiguous/general endpoints are excluded from default and may appear in optional file.
+# Surge DOMAIN-SET format
+# Leading dot = DOMAIN-SUFFIX; no leading dot = exact DOMAIN
+# Use DOMAIN-SET,filename,AI in [Rule]
+# GlobalAI CLEAN / conservative cross-provider AI policy
+# Purpose: Surge AI routing, NOT ad blocking, NOT MITM.
+# Original source inspected: https://magicrule.pages.dev/data/_shared/artifacts/GlobalAI_rules_7591fffa97b1e679.list
+# Conservative manual curation; some domain entries may be supplements.
+# Policy is configured on the DOMAIN-SET line in [Rule].
+# No IP/ASN, DOMAIN-KEYWORD, PROCESS-NAME or URL-REGEX.
 
+# OpenAI / ChatGPT / Sora
+.chatgpt.com
+.openai.com
+.oaistatic.com
+.oaiusercontent.com
+.oaistatsig.com
+.sora.com
+.chatgpt.livekit.cloud
+.openaiapi-site.azureedge.net
+openai-api.arkoselabs.com
+production-openaicom-storage.azureedge.net
+openaiassets.blob.core.windows.net
+openaicomproductionae4b.blob.core.windows.net
+
+.chat.com
 # Claude / Anthropic
-DOMAIN-SUFFIX,anthropic.com
-DOMAIN-SUFFIX,claude.ai
-DOMAIN-SUFFIX,claude.com
-DOMAIN-SUFFIX,claudeusercontent.com
-DOMAIN-SUFFIX,clau.de
-DOMAIN-SUFFIX,claudemcpclient.com
-DOMAIN-SUFFIX,claudemcpcontent.com
-DOMAIN,anthropic.auth0.com
-DOMAIN,anthropic-com.ghost.io
-DOMAIN,servd-anthropic-website.b-cdn.net
-DOMAIN,anthropic.com.cdn.cloudflare.net
+.anthropic.com
+.claude.ai
+.claude.com
+.claudeusercontent.com
+.clau.de
+.claudemcpclient.com
+.claudemcpcontent.com
+anthropic.auth0.com
+anthropic-com.ghost.io
+servd-anthropic-website.b-cdn.net
+anthropic.com.cdn.cloudflare.net
 
 # Google Gemini / AI Studio / NotebookLM / Antigravity
-DOMAIN-SUFFIX,gemini.google.com
-DOMAIN-SUFFIX,gemini.google
-DOMAIN-SUFFIX,notebooklm.google.com
-DOMAIN-SUFFIX,notebooklm.google
-DOMAIN-SUFFIX,antigravity.google
-DOMAIN,aistudio.google.com
-DOMAIN,ai.google.dev
-DOMAIN,makersuite.google.com
-DOMAIN,generativelanguage.googleapis.com
-DOMAIN,geminiweb-pa.clients.google.com
-DOMAIN,geminiweb-pa.clients6.google.com
-DOMAIN,appsgenaiserver-pa.clients.google.com
-DOMAIN,appsgenaiserver-pa.clients6.google.com
-DOMAIN,appsgenaiserver-pa.googleapis.com
-DOMAIN,alkalicore-pa.clients6.google.com
-DOMAIN,alkalimakersuite-pa.clients6.google.com
-DOMAIN,notebooklm-pa.googleapis.com
-DOMAIN,notebooklm.googleapis.com
-DOMAIN,antigravity-pa.googleapis.com
-DOMAIN,antigravity.googleapis.com
-DOMAIN,daily-cloudcode-pa.googleapis.com
+.gemini.google.com
+.gemini.google
+.notebooklm.google.com
+.notebooklm.google
+.antigravity.google
+aistudio.google.com
+ai.google.dev
+makersuite.google.com
+generativelanguage.googleapis.com
+geminiweb-pa.clients.google.com
+geminiweb-pa.clients6.google.com
+appsgenaiserver-pa.clients.google.com
+appsgenaiserver-pa.clients6.google.com
+appsgenaiserver-pa.googleapis.com
+alkalicore-pa.clients6.google.com
+alkalimakersuite-pa.clients6.google.com
+notebooklm-pa.googleapis.com
+notebooklm.googleapis.com
+antigravity-pa.googleapis.com
+antigravity.googleapis.com
+daily-cloudcode-pa.googleapis.com
 
+.deepmind.com
+.deepmind.google
+.generativeai.google
+.cloudcode-pa.googleapis.com
+aida.googleapis.com
+aicode.googleapis.com
+antigravity-unleash.goog
 # Grok / xAI
-DOMAIN-SUFFIX,x.ai
-DOMAIN-SUFFIX,grok.com
-DOMAIN-SUFFIX,grokusercontent.com
-DOMAIN-SUFFIX,grokcli.io
+.x.ai
+.grok.com
+.grokusercontent.com
 
 # Perplexity
-DOMAIN-SUFFIX,perplexity.ai
-DOMAIN-SUFFIX,perplexity.com
-DOMAIN-SUFFIX,pplx.ai
-DOMAIN,pplx-res.cloudinary.com
-DOMAIN,ppl-ai-file-upload.s3.amazonaws.com
+.perplexity.ai
+.perplexity.com
+.pplx.ai
+pplx-res.cloudinary.com
+ppl-ai-file-upload.s3.amazonaws.com
 
 # Microsoft Copilot / GitHub Copilot
-DOMAIN-SUFFIX,githubcopilot.com
-DOMAIN,copilot.microsoft.com
-DOMAIN,copilot.cloud.microsoft
-DOMAIN,copilot-proxy.githubusercontent.com
-DOMAIN,origin-tracker.githubusercontent.com
-DOMAIN,copilot-workspace.githubnext.com
+.githubcopilot.com
+copilot.microsoft.com
+copilot.cloud.microsoft
+copilot-proxy.githubusercontent.com
+origin-tracker.githubusercontent.com
 
 # AI coding / Developer Agents
-DOMAIN-SUFFIX,cursor.com
-DOMAIN-SUFFIX,cursor.sh
-DOMAIN-SUFFIX,windsurf.com
-DOMAIN-SUFFIX,windsurf.build
-DOMAIN-SUFFIX,codeium.com
-DOMAIN-SUFFIX,codeiumdata.com
-DOMAIN-SUFFIX,augmentcode.com
-DOMAIN-SUFFIX,coderabbit.ai
-DOMAIN-SUFFIX,cline.bot
+.cursor.com
+.cursor.sh
+.windsurf.com
+.windsurf.build
+.codeium.com
+.codeiumdata.com
+.augmentcode.com
+.coderabbit.ai
+.cline.bot
 
+.dify.ai
+api.jetbrains.ai
 # AI multi-model platforms
-DOMAIN-SUFFIX,poe.com
-DOMAIN-SUFFIX,poecdn.net
-DOMAIN-SUFFIX,openrouter.ai
-DOMAIN-SUFFIX,you.com
-DOMAIN-SUFFIX,phind.com
-DOMAIN-SUFFIX,genspark.ai
+.poe.com
+.poecdn.net
+.openrouter.ai
+.you.com
+.phind.com
+.genspark.ai
 
+.meta.ai
 # Model APIs / AI research / inference
-DOMAIN-SUFFIX,mistral.ai
-DOMAIN-SUFFIX,huggingface.co
-DOMAIN-SUFFIX,replicate.com
-DOMAIN-SUFFIX,fal.ai
-DOMAIN-SUFFIX,groq.com
-DOMAIN-SUFFIX,cohere.ai
-DOMAIN-SUFFIX,cohere.com
-DOMAIN-SUFFIX,together.ai
-DOMAIN-SUFFIX,fireworks.ai
-DOMAIN-SUFFIX,cerebras.ai
-DOMAIN-SUFFIX,deepinfra.com
-DOMAIN-SUFFIX,ollama.com
+.mistral.ai
+.huggingface.co
+.replicate.com
+.fal.ai
+.groq.com
+.cohere.ai
+.cohere.com
+.together.ai
+.fireworks.ai
+.cerebras.ai
+.deepinfra.com
+.ollama.com
 
+gateway.ai.cloudflare.com
 # Generative media / assistants
-DOMAIN-SUFFIX,character.ai
-DOMAIN-SUFFIX,midjourney.com
-DOMAIN-SUFFIX,runwayml.com
-DOMAIN-SUFFIX,elevenlabs.io
-DOMAIN-SUFFIX,suno.com
-DOMAIN-SUFFIX,udio.com
-DOMAIN-SUFFIX,ideogram.ai
-DOMAIN-SUFFIX,pika.art
-DOMAIN-SUFFIX,civitai.com
-DOMAIN-SUFFIX,stability.ai
-DOMAIN-SUFFIX,blackforestlabs.ai
-DOMAIN-SUFFIX,luma.ai
-DOMAIN-SUFFIX,heygen.com
-DOMAIN-SUFFIX,synthesia.io
-DOMAIN-SUFFIX,otter.ai
-DOMAIN-SUFFIX,clipdrop.co
-DOMAIN-SUFFIX,openart.ai
+.character.ai
+.midjourney.com
+.runwayml.com
+.elevenlabs.io
+.suno.com
+.udio.com
+.ideogram.ai
+.pika.art
+.civitai.com
+.stability.ai
+.blackforestlabs.ai
+.luma.ai
+.heygen.com
+.synthesia.io
+.otter.ai
+.clipdrop.co
+.openart.ai
+.jasper.ai
