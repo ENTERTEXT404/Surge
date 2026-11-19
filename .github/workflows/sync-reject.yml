@@ -100,7 +100,7 @@ jobs:
           server = os.environ["GITHUB_SERVER_URL"]
           header = [
               "# NAME: REJECT",
-              f"# AUTHOR: {repository}",
+              f"# AUTHOR: {os.environ['GITHUB_REPOSITORY_OWNER']}",
               f"# REPO: {server}/{repository}",
               "# UPDATED: ",
               f"# TOTAL: {total}",
