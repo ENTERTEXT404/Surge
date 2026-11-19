@@ -1,12 +1,12 @@
-AWAvenue Ads Rule
+# AWAvenue Ads Rule
 
-本仓库的 REJECT.list 同步自 AWAvenue Ads Rule 的 Surge 规则，按 GNU GPL v3 分发。
-来源：https://github.com/TG-Twilight/AWAvenue-Ads-Rule/blob/main/Filters/AWAvenue-Ads-Rule-Surge.list
+[REJECT.list](../REJECT.list) 同步自 [AWAvenue Ads Rule 的 Surge 规则](https://github.com/TG-Twilight/AWAvenue-Ads-Rule/blob/main/Filters/AWAvenue-Ads-Rule-Surge.list)，按 GNU GPL v3 分发。
 
 2026-11-19 调整了镜像的文件头格式，域名规则沿用上游。
 
------------------------------------------------------------------------
+## GNU GPL v3 原文
 
+```text
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -681,3 +681,4 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+```

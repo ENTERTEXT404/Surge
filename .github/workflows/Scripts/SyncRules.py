@@ -76,7 +76,7 @@ def main(upstream_path: Path) -> None:
         "# SOURCE: TG-Twilight/AWAvenue-Ads-Rule",
         "# SOURCE_URL: https://github.com/TG-Twilight/AWAvenue-Ads-Rule",
         "# LICENSE: GPL-3.0",
-        "# LICENSE_FILE: LICENSES/AWAvenue.txt",
+        "# LICENSE_FILE: LICENSES/AWAvenue.md",
         f"# MAINTAINER: {os.environ['GITHUB_REPOSITORY_OWNER']}",
         f"# REPO: {server}/{repository}",
         "# MODIFIED: 2026-11-19",
