@@ -70,13 +70,20 @@ def main(upstream_path: Path) -> None:
 
     repository = os.environ["GITHUB_REPOSITORY"]
     server = os.environ["GITHUB_SERVER_URL"]
+    updated_prefix = "# UPDATED: "
     header = [
         "# NAME: REJECT",
-        f"# AUTHOR: {os.environ['GITHUB_REPOSITORY_OWNER']}",
+        "# SOURCE: TG-Twilight/AWAvenue-Ads-Rule",
+        "# SOURCE_URL: https://github.com/TG-Twilight/AWAvenue-Ads-Rule",
+        "# LICENSE: GPL-3.0",
+        "# LICENSE_FILE: LICENSES/AWAvenue.txt",
+        f"# MAINTAINER: {os.environ['GITHUB_REPOSITORY_OWNER']}",
         f"# REPO: {server}/{repository}",
-        "# UPDATED: ",
+        "# MODIFIED: 2026-11-19",
+        updated_prefix,
         f"# TOTAL: {total}",
     ]
+    updated_index = header.index(updated_prefix)
     body = [""]
     if manual:
         body.extend(["# ======= 手动维护规则 ========", *manual])
@@ -88,14 +95,14 @@ def main(upstream_path: Path) -> None:
     # 内容有变化时才更新时间，避免每天产生空提交。
     if (
         len(previous) >= len(header)
-        and previous[3].startswith(header[3])
-        and previous[:3] == header[:3]
-        and previous[4:] == header[4:] + body
+        and previous[:updated_index] == header[:updated_index]
+        and previous[updated_index].startswith(updated_prefix)
+        and previous[updated_index + 1:] == header[updated_index + 1:] + body
     ):
         print(f"REJECT.list is unchanged ({total} rules).")
         return
 
-    header[3] += f"{datetime.now(ZoneInfo('Asia/Shanghai')):%Y.%m.%d %H:%M:%S}"
+    header[updated_index] += f"{datetime.now(ZoneInfo('Asia/Shanghai')):%Y.%m.%d %H:%M:%S}"
     output.write_text("\n".join(header + body) + "\n", encoding="utf-8")
     print(f"Validated {len(synchronized)} upstream rules and {len(manual)} manual rules.")
 
