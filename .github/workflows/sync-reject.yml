@@ -67,12 +67,8 @@ jobs:
               "# NAME: REJECT",
               "# AUTHOR: AWAvenue Ads Rule",
               "# REPO: https://github.com/ENTERTEXT404/Surge",
-              f"# UPDATED: {updated:%Y.%m.%d %H:%M:%S} UTC+8",
+              f"# UPDATED: {updated:%Y.%m.%d %H:%M:%S}",
               f"# TOTAL: {len(rules)}",
-              "# SOURCE: https://github.com/TG-Twilight/AWAvenue-Ads-Rule",
-              "# LICENSE: GPL-3.0 (LICENSES/AWAvenue-Ads-Rule-GPL-3.0.txt)",
-              "# MODIFIED: 此镜像重排文件头，域名规则沿用上游。",
-              "# ======= 上游同步规则 ========",
           ]
           Path("REJECT.list").write_text("\n".join(header + rules) + "\n", encoding="utf-8")
           print(f"Validated {len(rules)} upstream DOMAIN-SET rules.")
