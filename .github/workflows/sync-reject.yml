@@ -105,7 +105,7 @@ jobs:
               "# UPDATED: ",
               f"# TOTAL: {total}",
           ]
-          body = []
+          body = [""]
           if manual:
               body.extend(["# ======= 手动维护规则 ========", *manual])
           body.extend(["# ======= 上游同步规则 ========", *synchronized])
@@ -136,5 +136,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Sync REJECT.list from AWAvenue Ads Rule'
+          commit_time=$(TZ=Asia/Shanghai date "+%Y.%m.%d %H:%M:%S")
+          git commit -m "$commit_time Update"
           git push origin HEAD:refs/heads/main
