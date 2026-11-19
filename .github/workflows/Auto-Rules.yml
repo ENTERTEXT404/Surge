@@ -1,10 +1,12 @@
 name: Sync REJECT.list
 
 'on':
+  # 北京时间每天 06:30 检查上游，也可以在 Actions 页面手动运行。
   schedule:
     - cron: '30 6 * * *'
       timezone: Asia/Shanghai
   workflow_dispatch:
+  # 工作流或手动规则文件改动时，立即跑一次同步。
   push:
     branches: [main]
     paths:
@@ -12,9 +14,11 @@ name: Sync REJECT.list
       - Rules/Manual/REJECT.txt
       - Rules/Manual/REJECT.exclude.txt
 
+# 使用 GitHub 提供的令牌提交名单。
 permissions:
   contents: write
 
+# 避免定时任务和手动运行同时写入名单。
 concurrency:
   group: sync-reject-list
 
@@ -33,6 +37,7 @@ jobs:
       - name: Download and validate upstream rules
         shell: bash
         run: |
+          # 下载到临时文件，下载失败时保留当前名单。
           upstream=$(mktemp)
           trap 'rm -f "$upstream"' EXIT
           curl --fail --silent --show-error --location --retry 3 \
@@ -84,10 +89,12 @@ jobs:
               return result
 
 
+          # 同时校验域名格式和上游声明的条数，防止截断内容被写入。
           upstream, metadata = read_rules(Path(sys.argv[1]))
           if not upstream or str(len(upstream)) != metadata.get("Total lines"):
               raise SystemExit("Upstream rule count is empty or differs from its declared total")
 
+          # 手动规则优先。排除表只作用于上游，并按整条规则比较。
           seen = set()
           manual = unique_rules(optional_rules("REJECT.txt"), seen)
           exclusions = {rule.casefold() for rule in optional_rules("REJECT.exclude.txt")}
@@ -111,7 +118,17 @@ jobs:
           body.extend(["# ======= 上游同步规则 ========", *synchronized])
 
           output = Path("REJECT.list")
-          previous = output.read_text(encoding="utf-8").splitlines() if output.exists() else []
+          previous = output.read_text(encoding="utf-8").splitlines()
+          # 来源和许可保存在名单末尾，按注释原样保留。
+          notice_marker = "# ======= AWAvenue 来源与许可 ========"
+          if notice_marker not in previous:
+              raise SystemExit("REJECT.list 缺少来源与许可区段")
+          notice = previous[previous.index(notice_marker):]
+          if len(notice) == 1 or any(not line.startswith("#") for line in notice):
+              raise SystemExit("REJECT.list 的来源与许可区段必须全部为注释")
+          body.extend(["", *notice])
+
+          # 内容有变化时才更新时间，避免每天产生空提交。
           if (
               len(previous) >= len(header)
               and previous[3].startswith(header[3])
@@ -129,6 +146,7 @@ jobs:
       - name: Commit changes to REJECT.list
         shell: bash
         run: |
+          # 只提交生成的名单，提交标题使用北京时间。
           git add -- REJECT.list
           if git diff --cached --quiet -- REJECT.list; then
             echo 'REJECT.list is already up to date.'
