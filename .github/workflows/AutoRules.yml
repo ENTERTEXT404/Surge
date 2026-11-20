@@ -59,7 +59,7 @@ jobs:
         shell: bash
         env:
           # 固定快照限制 DIRECT 自动纳入的范围，也用于防止 GlobalAI 覆盖已审核直连。
-          DIRECT_BASELINE: 0ca36e36e56af9bbee9f6f187afb0a76f73d721b
+          DIRECT_BASELINE: 9f03e5976469dfeeb87cd981693f924f3431d8a0
         run: |
           git fetch --no-tags --depth 1 origin "$DIRECT_BASELINE"
           git show "${DIRECT_BASELINE}:DIRECT.list" > "$RUNNER_TEMP/direct-baseline.list"
