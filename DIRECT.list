@@ -6,8 +6,8 @@
 # MAINTAINER: ENTERTEXT404
 # REPO: https://github.com/ENTERTEXT404/Surge
 # MODIFIED: 2026-11-19
-# UPDATED: 2026.11.19 16:24:07
-# TOTAL: 110196
+# UPDATED: 2026.11.20 15:54:47
+# TOTAL: 110201
 
 # ======= 上游同步规则 ========
 .0.zone
@@ -74104,6 +74104,7 @@ prod.databe.floonet.goog
 .qpkaifa.com
 .qplus.com
 .qplusstatic.com
+qpmcn.com
 .qpoc.com
 .qpstar.com
 .qpwater.com
@@ -95887,13 +95888,16 @@ www.destinationurl.com
 .www.gov.mo
 www.gstatic.com
 .www.htc.com
+www.lenovofuturecenter.com
 www.pxcc.com
+www.qpmcn.com
 www.recaptcha-cn.net
 www.recaptcha.net
 .www.redhat.com
 www.routerlogin.com
 .www.st.com
 .www.vive.com
+www.zhaoliangjipc.com
 .www100789.com
 .www9912.com
 .wwwer.net
@@ -106592,6 +106596,7 @@ xtratime.qcomgeo2.com
 .zhaokuaizhao.com
 .zhaolaobanla.com
 .zhaoliangji.com
+zhaoliangjipc.com
 .zhaoliming.net
 .zhaoming.biz
 .zhaomishijie.com
