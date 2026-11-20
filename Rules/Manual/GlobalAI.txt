@@ -89,6 +89,7 @@ api.jetbrains.ai
 .windsurf.com
 
 # AI multi-model platforms
+.arena.ai
 .genspark.ai
 .meta.ai
 .openrouter.ai
@@ -128,6 +129,7 @@ gateway.ai.cloudflare.com
 .pika.art
 .runwayml.com
 .stability.ai
+stitch.google.com
 .suno.com
 .synthesia.io
 .udio.com
