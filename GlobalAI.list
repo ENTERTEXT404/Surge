@@ -6,8 +6,8 @@
 # MAINTAINER: ENTERTEXT404
 # REPO: https://github.com/ENTERTEXT404/Surge
 # MODIFIED: 2026-11-19
-# UPDATED: 2026.11.19 16:48:09
-# TOTAL: 119
+# UPDATED: 2026.11.20 15:38:35
+# TOTAL: 120
 
 # ======= 手动维护规则 ========
 # OpenAI / ChatGPT / Sora
@@ -101,6 +101,7 @@ api.jetbrains.ai
 .windsurf.com
 
 # AI multi-model platforms
+.arena.ai
 .genspark.ai
 .meta.ai
 .openrouter.ai
@@ -140,14 +141,13 @@ gateway.ai.cloudflare.com
 .pika.art
 .runwayml.com
 .stability.ai
+stitch.google.com
 .suno.com
 .synthesia.io
 .udio.com
 
 # ======= 上游同步规则 ========
 jules.google.com
-stitch.google.com
-.arena.ai
 .leonardo.ai
 .recraft.ai
 stitch.withgoogle.com
