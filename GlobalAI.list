@@ -145,8 +145,9 @@ gateway.ai.cloudflare.com
 .udio.com
 
 # ======= 上游同步规则 ========
-arena.ai
 jules.google.com
+stitch.google.com
+.arena.ai
 .leonardo.ai
 .recraft.ai
 stitch.withgoogle.com
