@@ -1,7 +1,7 @@
 name: Sync Surge rules
 
 'on':
-  # 北京时间每天 07:00 同步 DIRECT、REJECT 和 GlobalAI，也可以手动运行。
+  # 北京时间每天 07:00 同步 DIRECT、REJECT、GlobalAI 和 CIDRCN，也可以手动运行。
   schedule:
     - cron: '0 7 * * *'
       timezone: Asia/Shanghai
@@ -14,6 +14,8 @@ name: Sync Surge rules
       - .github/workflows/Scripts/SyncRules.py
       - .github/workflows/Scripts/SyncDirect.py
       - .github/workflows/Scripts/SyncGlobalAI.py
+      - .github/workflows/Scripts/SyncCIDRCN.py
+      - Rules/Manual/CIDRCN.exclude.txt
       - Rules/Manual/GlobalAI.txt
       - Rules/Manual/GlobalAI.approved.txt
       - Rules/Manual/REJECT.txt
@@ -93,13 +95,30 @@ jobs:
         run: |
           python3 .github/workflows/Scripts/SyncGlobalAI.py "$RUNNER_TEMP/direct-baseline.list"
 
+      - name: Sync CIDRCN.list
+        id: cidrcn
+        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+        shell: bash
+        run: |
+          workdir=$(mktemp -d)
+          trap 'rm -rf "$workdir"' EXIT
+
+          for file in china_ip.conf china_ip_ipv6.conf; do
+            curl --fail --silent --show-error --location --retry 3 \
+              --proto '=https' --proto-redir '=https' --connect-timeout 10 \
+              --max-time 45 --output "$workdir/$file" "https://ruleset.skk.moe/List/ip/$file"
+          done
+
+          python3 .github/workflows/Scripts/SyncCIDRCN.py "$workdir/china_ip.conf" "$workdir/china_ip_ipv6.conf"
+
       - name: Commit changes to rule lists
-        if: ${{ !cancelled() && (steps.reject.outcome == 'success' || steps.direct.outcome == 'success' || steps.globalai.outcome == 'success') }}
+        if: ${{ !cancelled() && (steps.reject.outcome == 'success' || steps.direct.outcome == 'success' || steps.globalai.outcome == 'success' || steps.cidrcn.outcome == 'success') }}
         shell: bash
         env:
           REJECT_OUTCOME: ${{ steps.reject.outcome }}
           DIRECT_OUTCOME: ${{ steps.direct.outcome }}
           GLOBALAI_OUTCOME: ${{ steps.globalai.outcome }}
+          CIDRCN_OUTCOME: ${{ steps.cidrcn.outcome }}
         run: |
           # 分别暂存成功生成的名单，单一上游失败时继续发布另一份。
           if [[ "$REJECT_OUTCOME" == success ]]; then
@@ -111,7 +130,10 @@ jobs:
           if [[ "$GLOBALAI_OUTCOME" == success ]]; then
             git add -- GlobalAI.list
           fi
-          if git diff --cached --quiet -- REJECT.list DIRECT.list GlobalAI.list; then
+          if [[ "$CIDRCN_OUTCOME" == success ]]; then
+            git add -- CIDRCN.list
+          fi
+          if git diff --cached --quiet -- REJECT.list DIRECT.list GlobalAI.list CIDRCN.list; then
             echo 'Rule lists are already up to date.'
             exit 0
           fi
